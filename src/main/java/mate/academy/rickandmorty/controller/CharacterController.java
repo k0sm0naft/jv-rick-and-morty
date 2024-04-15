@@ -30,7 +30,8 @@ public class CharacterController {
     @GetMapping("/{name}")
     @Operation(summary = "Return list of characters",
             description = "Return list of characters info that contains word in their names")
-    public List<CharacterDto> searchByName(@PathVariable @Parameter(description = "Part of characters name")  String name) {
+    public List<CharacterDto> searchByName(
+            @PathVariable @Parameter(description = "Part of characters name") String name) {
         return characterService.findByName(name);
     }
 }
