@@ -1,32 +1,41 @@
 package mate.academy.rickandmorty.service;
 
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import mate.academy.rickandmorty.client.RickAndMortyCharactersClient;
+import mate.academy.rickandmorty.dto.external.ExternalDto;
 import mate.academy.rickandmorty.dto.internal.CharacterDto;
 import mate.academy.rickandmorty.mappper.CharacterMapper;
-import mate.academy.rickandmorty.model.Character;
 import mate.academy.rickandmorty.repository.CharacterDao;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class CharacterServiceImpl implements CharacterService {
+    public static final String ENDPOINT = "/api/character";
     private final CharacterDao characterDao;
     private final CharacterMapper characterMapper;
     private final RickAndMortyCharactersClient charactersClient;
-    private final Random random = new Random();
+    private final Random random;
+    @Value("${rickandmorty.url}")
+    private String baseUrl;
 
-    @PostConstruct
+    @EventListener(ContextRefreshedEvent.class)
     @Override
     public void saveAllExternalCharacters() {
-        List<Character> characters = charactersClient.getExternalCharacters().stream()
-                                               .map(characterMapper::toModel)
-                                               .toList();
-        characterDao.saveAll(characters);
+        String fullUrl = baseUrl + ENDPOINT;
+        while (fullUrl != null) {
+            ExternalDto externalDto = charactersClient.getExternalDto(fullUrl);
+            characterDao.saveAll(externalDto.results().stream()
+                    .map(characterMapper::toModel)
+                    .toList());
+            fullUrl = externalDto.info().next();
+        }
     }
 
     @Override
@@ -41,7 +50,7 @@ public class CharacterServiceImpl implements CharacterService {
     @Override
     public List<CharacterDto> findByName(String name) {
         return characterDao.findAllByNameContains(name).stream()
-                .map(characterMapper::toDto)
-                .toList();
+                           .map(characterMapper::toDto)
+                           .toList();
     }
 }
