@@ -1,6 +1,7 @@
 package mate.academy.rickandmorty.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +27,10 @@ public class CharacterController {
         return characterService.getRandomCharacter();
     }
 
-    @GetMapping("/{word}")
+    @GetMapping("/{name}")
     @Operation(summary = "Return list of characters",
             description = "Return list of characters info that contains word in their names")
-    public List<CharacterDto> searchByName(@PathVariable String word) {
-        return characterService.findByName(word);
+    public List<CharacterDto> searchByName(@PathVariable @Parameter(description = "Part of characters name")  String name) {
+        return characterService.findByName(name);
     }
 }

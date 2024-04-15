@@ -3,7 +3,7 @@ package mate.academy.rickandmorty.dto.external;
 import java.util.List;
 
 public record ExternalDto(
-        InfoDto info,
+        PageInfoDto info,
         List<ExternalCharacterDto> results
 ) {
 }

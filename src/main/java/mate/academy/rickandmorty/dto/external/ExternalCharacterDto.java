@@ -1,7 +1,7 @@
 package mate.academy.rickandmorty.dto.external;
 
 public record ExternalCharacterDto(
-        Integer id,
+        Long id,
         String name,
         String status,
         String gender

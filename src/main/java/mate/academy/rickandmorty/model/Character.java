@@ -5,25 +5,25 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @NoArgsConstructor
+@Data
 @Entity
 @Table(name = "characters")
 public class Character {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private Integer externalId;
+    private Long id;
+    private Long externalId;
     private String name;
     private String status;
     private String gender;
 
-    public Character(Integer externalId, String name, String status, String gender) {
+    public Character(Long externalId, String name, String status, String gender) {
         this.externalId = externalId;
         this.name = name;
         this.status = status;

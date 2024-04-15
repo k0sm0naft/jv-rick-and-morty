@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import mate.academy.rickandmorty.client.RickAndMortyCharactersClient;
 import mate.academy.rickandmorty.dto.internal.CharacterDto;
 import mate.academy.rickandmorty.mappper.CharacterMapper;
 import mate.academy.rickandmorty.model.Character;
@@ -18,7 +19,6 @@ public class CharacterServiceImpl implements CharacterService {
     private final CharacterMapper characterMapper;
     private final RickAndMortyCharactersClient charactersClient;
     private final Random random = new Random();
-    private int countOfCharacters;
 
     @PostConstruct
     @Override
@@ -26,13 +26,12 @@ public class CharacterServiceImpl implements CharacterService {
         List<Character> characters = charactersClient.getExternalCharacters().stream()
                                                .map(characterMapper::toModel)
                                                .toList();
-        countOfCharacters = characters.size();
         characterDao.saveAll(characters);
     }
 
     @Override
     public CharacterDto getRandomCharacter() {
-        int randomId = random.nextInt(countOfCharacters);
+        long randomId = random.nextLong(characterDao.count());
         return characterDao.findById(randomId)
                            .map(characterMapper::toDto)
                            .orElseThrow(() -> new NoSuchElementException(
