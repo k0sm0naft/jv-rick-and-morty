@@ -10,14 +10,14 @@ import mate.academy.rickandmorty.dto.internal.CharacterDto;
 import mate.academy.rickandmorty.mappper.CharacterMapper;
 import mate.academy.rickandmorty.repository.CharacterDao;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class CharacterServiceImpl implements CharacterService {
-    public static final String ENDPOINT = "/api/character";
+    public static final String CHARACTERS_ENDPOINT_PATH = "/api/character";
     private final CharacterDao characterDao;
     private final CharacterMapper characterMapper;
     private final RickAndMortyCharactersClient charactersClient;
@@ -25,10 +25,10 @@ public class CharacterServiceImpl implements CharacterService {
     @Value("${rickandmorty.url}")
     private String baseUrl;
 
-    @EventListener(ContextRefreshedEvent.class)
+    @EventListener(ApplicationReadyEvent.class)
     @Override
     public void saveAllExternalCharacters() {
-        String fullUrl = baseUrl + ENDPOINT;
+        String fullUrl = baseUrl + CHARACTERS_ENDPOINT_PATH;
         while (fullUrl != null) {
             ExternalDto externalDto = charactersClient.getExternalDto(fullUrl);
             characterDao.saveAll(externalDto.results().stream()
